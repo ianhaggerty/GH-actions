@@ -1,0 +1,49 @@
+name: Last-Failed Pytest
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # Restore pytest's last-failed cache from previous runs
+      - name: Restore pytest cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .pytest_cache
+          key: pytest-lastfailed-${{ runner.os }}-${{ github.ref_name }}
+          restore-keys: |
+            pytest-lastfailed-${{ runner.os }}-
+
+      - name: Run tests (last failed prioritized)
+        run: |
+          # Run only tests that failed last time; if none recorded, run all
+          pytest -q --last-failed --last-failed-no-failures all
+
+      # Save updated last-failed cache for the next push
+      - name: Save pytest cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .pytest_cache
+          # Use a unique key per run so saving always succeeds
+          key: pytest-lastfailed-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
