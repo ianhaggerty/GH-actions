@@ -13,4 +13,4 @@ def test_divide_by_zero():
         divide(10, 0)
 
 def test_will_fail():
-    assert 1 == 2
+    assert 1 == 3
