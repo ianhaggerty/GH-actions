@@ -32,7 +32,7 @@ jobs:
           path: .pytest_cache
           key: pytest-lastfailed-${{ runner.os }}-${{ github.ref_name }}
           restore-keys: |
-            pytest-lastfailed-${{ runner.os }}-
+            pytest-lastfailed-${{ runner.os }}-${{ github.ref_name }}-
 
       - name: Run tests (last failed prioritized)
         run: |
