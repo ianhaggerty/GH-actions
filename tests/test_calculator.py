@@ -17,3 +17,6 @@ def test_will_fail():
 
 def test_will_also_fail():
     assert 2 == 3
+
+def phoenix_will_not_fail():
+    assert "Phat. Faatt. Fat."[-4:] == "Fat."
